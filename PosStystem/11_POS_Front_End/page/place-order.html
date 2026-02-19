@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Page</title>
+</head>
+<body>
+    <h1>Place Order</h1>
+    <input type="text" id="order-id" placeholder="Order ID">
+    <select id="customer-id">
+        <option value="">Select Customer</option>
+    </select>
+    <select id="item-id" >
+        <option value="">Select Item</option>
+    </select>
+    <input type="number" id="quantity" placeholder="Quantity">
+
+    <button onclick="addToCart()">Add To Cart</button>
+    <button onclick="placeOrder()">Place Order</button>
+
+    <table border="1">
+        <thead>
+        <tr>
+            <th>Item Id</th>
+            <th>Qty</th>
+            <th>Unit Price</th>
+        </tr>
+        </thead>
+        <tbody id="cart-body"></tbody>
+    </table>
+    <script src="../accest/js/jquery-3.6.4.min.js"></script>
+
+<script>
+    let cart = [];
+
+    function loadCustomers(){
+        $.ajax({
+            url: "http://localhost:8080/api/v1/customer",
+            method: "GET",
+            success: function (response){
+                for(let customer of response){
+                    $("#customer-id").append(
+                        `<option value="${customer.id}">${customer.id}</option>`
+                    );
+                }
+            }
+        });
+    }
+
+    function loadItems(){
+        $.ajax({
+            url: "http://localhost:8080/api/v1/item",
+            method: 'GET',
+            success: function (response){
+                for(let item of response){
+                    $("#item-id").append(
+                        `<option value="${item.id}">${item.id}</option>`
+                    )
+                }
+            }
+        })
+    }
+
+    function addToCart(){
+        const itemId = $("#item-id").val();
+        const qty = $("#quantity").val();
+
+        if (!itemId || !qty){
+            alert("Select item and quantity");
+            return;
+        }
+
+        $.ajax({
+            url: "http://localhost:8080/api/v1/item/" + itemId,
+            method: 'GET',
+            success: function (item){
+
+                const cartItem = {
+                    itemId: item.id,
+                    itemQty: parseInt(qty),
+                    unitPrice: item.price
+                };
+                cart.push(cartItem);
+
+                const row = `<tr>
+                                <td>${item.id}</td>
+                                <td>${qty}</td>
+                                <td>${item.price}</td>
+                             </tr>`
+                $("#cart-body").append(row);
+            }
+        })
+    }
+
+    function placeOrder(){
+        const orderDate = {
+            orderID: $("#order-id").val(),
+            date: new Date().toISOString().split("T")[0],
+            customerID: $("#customer-id").val(),
+            orderDetailDTOList: cart
+        };
+
+        $.ajax({
+            url: "http://localhost:8080/api/v1/order",
+            method: 'POST',
+            contentType: "application/json",
+            data: JSON.stringify(orderDate),
+            success: function (){
+                alert("Order Placed Successfully");
+                location.reload();
+            },
+            error: function (error){
+                console.log(error);
+                alert("Error Placing order")
+            }
+        });
+    }
+    window.onload = function (){
+        loadCustomers();
+        loadItems();
+    }
+</script>
+
+</body>
+</html>

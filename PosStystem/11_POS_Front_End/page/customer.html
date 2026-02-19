@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>Customer Page</h1>
+
+<input id="id" type="text" placeholder="Customer ID">
+<input id="name" type="text" placeholder="Customer Name">
+<input id="address" type="text" placeholder="Customer Address">
+
+<button onclick="saveCustomer()" id="addCustomer">Add Customer</button>
+<button onclick="updateCustomer()" id="updateCustomer">Update Customer</button>
+<button ONCLICK="deleteCustomer()" id="deleteCustomer">Delete Customer</button>
+
+<table id="customerTable">
+    <thead>
+      <tr>
+          <th> ID</th>
+          <th> Name</th>
+          <th> Address</th>
+      </tr>
+    </thead>
+    <tbody id="tablebody"></tbody>
+</table>
+
+<script src="../accest/js/jquery-3.6.4.min.js"></script>
+<script>
+    function saveCustomer() {
+
+       const custId =$("#id").val();
+       const name = $("#name").val();
+       const address = $("#address").val()
+
+        $.ajax({
+            url:'http://localhost:8080/api/v1/customer',
+            method: 'POST',
+            contentType:'application/json',
+            data:JSON.stringify({
+                id: custId,
+                name: name,
+                address : address
+            }),
+            success:function (response){
+                console.log(response)
+                getAll();
+            },
+            error:function(error){
+                console.log(error)
+            }
+
+        });
+         alert(" Customer Saved")
+    }
+
+    function updateCustomer(){
+        const custId =$("#id").val();
+        const name = $("#name").val();
+        const address = $("#address").val()
+
+        $.ajax({
+            url:'http://localhost:8080/api/v1/customer',
+            method: 'PUT',
+            contentType:'application/json',
+            data:JSON.stringify({
+                id: custId,
+                name: name,
+                address : address
+            }),
+            success:function (response){
+                console.log(response)
+                getAll();
+            },
+            error:function(error){
+                console.log(error)
+            }
+
+        });
+        alert(" Customer Updated")
+    }
+    function deleteCustomer(){
+        const custId = $("#id").val();
+
+        $.ajax({
+            url:'http://localhost:8080/api/v1/customer/'+custId,
+            method: 'DELETE',
+            success:function (response) {
+                getAll();
+            },
+            error:function (error) {
+                console.log(error)
+            }
+        })
+         alert("Customer deleted")
+    }
+    function getAll(){
+        $.ajax({
+            url:'http://localhost:8080/api/v1/customer',
+            method: 'GET',
+            success:function (response){
+                console.log(response)
+                for (let customer of response){
+                    const tablerow = "<tr>" +
+                        "<td>" + customer.id + "</td>" +
+                        "<td>" + customer.name + "</td>" +
+                        "<td>" + customer.address + "</td>" +
+                        "</tr>"
+                    $("#tablebody").append(tablerow);
+                }
+            },
+            error:function (response){
+                console.log(response)
+            }
+        })
+    }
+    window.onload(
+        getAll()
+    )
+</script>
+</body>
+</html>

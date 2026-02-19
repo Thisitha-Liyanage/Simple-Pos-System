@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>Item Page</h1>
+
+<input id="id" type="text" placeholder="item ID">
+<input id="name" type="text" placeholder="item Name">
+<input id="price" type="text" placeholder="item Price">
+<input id="qty" type="text" placeholder="item Quantity">
+
+<button onclick="saveItem()" id="addItem">Add Item</button>
+<button onclick="updateItem()" id="updateCustomer">Update Item</button>
+<button onclick="deleteItem()" id="deleteCustomer">Delete Item</button>
+
+<table id="customerTable">
+    <thead>
+    <tr>
+        <th> ID</th>
+        <th> Name</th>
+        <th> Price</th>
+        <th> Quantity</th>
+    </tr>
+    </thead>
+    <tbody id="tablebody"></tbody>
+</table>
+<script src="../accest/js/jquery-3.6.4.min.js"></script>
+<script>
+    function saveItem(){
+        const id = $("#id").val()
+        const name = $("#name").val()
+        const price = $("#price").val()
+        const qty = $("#qty").val()
+
+        $.ajax({
+            url:'http://localhost:8080/api/v1/item',
+            method: 'POST',
+            contentType:'application/json',
+            data:JSON.stringify({
+                id: id,
+                name: name,
+                price:Number(price),
+                quantity:Number(qty)
+            }),
+            success: function (resp){
+                console.log(resp)
+                getAll()
+            },
+            error: function (resp){
+                console.log(resp)
+            }
+        })
+        alert("Item Saved Successfully")
+    }
+    function updateItem(){
+        const id = $("#id").val()
+        const name = $("#name").val()
+        const price = $("#price").val()
+        const qty = $("#qty").val()
+
+        $.ajax({
+            url:'http://localhost:8080/api/v1/item',
+            method: 'PUT',
+            contentType:'application/json',
+            data:JSON.stringify({
+                id: id,
+                name: name,
+                price:price,
+                quantity:qty
+            }),
+            success: function (resp){
+                console.log(resp)
+                getAll()
+            },
+            error: function (resp){
+                console.log(resp)
+            }
+        })
+        alert("Item Updated Successfully")
+
+    }
+    function deleteItem(){
+        const id = $("#id").val()
+
+        $.ajax({
+            url:'http://localhost:8080/api/v1/item/'+id,
+            method: 'DELETE',
+            success: function (resp){
+                getAll()
+                console.log(resp)
+            },
+            error: function (resp){
+                console.log(resp)
+            }
+        })
+        alert("Item Deleted Successfully")
+    }
+    function getAll(){
+        $.ajax({
+            url:'http://localhost:8080/api/v1/item',
+            method:'GET',
+            success: function (resp){
+                console.log(resp)
+                for(let item of resp){
+                    const tableRow = "<tr>" +
+                        "<td>" + item.id + "</td>" +
+                        "<td>" + item.name + "</td>" +
+                        "<td>" + item.price + "</td>" +
+                        "<td>" + item.quantity + "</td>" +
+                        "</tr>"
+                    $("#tablebody").append(tableRow);
+                }
+            },
+            error: function (resp){
+                console.log(resp)
+            }
+        })
+
+    }
+    window.onload(
+        getAll()
+    )
+</script>
+</body>
+</html>
