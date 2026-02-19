@@ -1,32 +1,25 @@
 package org.example.posbackend.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.*;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
 public class ItemDto {
-    @NotNull
+    @NotNull(message = "ID is required")
     private String id;
 
-    @NotBlank
-    @Pattern(regexp = "^[A-Za-z ]+$\n" ,message = "incorrect name")
+    @NotBlank(message = "Name is required")
+    @Pattern(regexp = "^[A-Za-z ]+$", message = "Incorrect name")
     private String name;
 
-    @NotBlank
-    @Positive
-    @Pattern(regexp = "^\\d+(\\.\\d{1,2})?$\n" , message = "incorrect value")
-    private double price;
+    @NotNull(message = "Price is required")
+    @Positive(message = "Price must be greater than 0")
+    private Double price;
 
-    @NotBlank
-    @Positive
-    private int quantity;
+    @NotNull(message = "Quantity is required")
+    @Positive(message = "Quantity must be greater than 0")
+    private Integer quantity;
 }

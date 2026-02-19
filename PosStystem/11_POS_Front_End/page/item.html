@@ -2,127 +2,256 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Item Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            padding: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .form-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 450px;
+            margin: 0 auto 30px auto;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 10px 15px;
+            margin: 5px 2px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        #addItem { background-color: #28a745; }
+        #updateItem { background-color: #007bff; }
+        #deleteItem { background-color: #dc3545; }
+
+        button:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
+
+        table {
+            width: 80%;
+            margin: auto;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background-color: #343a40;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        #messageBox {
+            width: 450px;
+            margin: 10px auto;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
 </head>
 <body>
-<h1>Item Page</h1>
 
-<input id="id" type="text" placeholder="item ID">
-<input id="name" type="text" placeholder="item Name">
-<input id="price" type="text" placeholder="item Price">
-<input id="qty" type="text" placeholder="item Quantity">
+<h1>Item Management</h1>
 
-<button onclick="saveItem()" id="addItem">Add Item</button>
-<button onclick="updateItem()" id="updateCustomer">Update Item</button>
-<button onclick="deleteItem()" id="deleteCustomer">Delete Item</button>
+<div class="form-container">
+    <input id="id" type="text" placeholder="Item ID">
+    <input id="name" type="text" placeholder="Item Name">
+    <input id="price" type="text" placeholder="Item Price">
+    <input id="qty" type="text" placeholder="Item Quantity">
 
-<table id="customerTable">
+    <div>
+        <button onclick="saveItem()" id="addItem">Add Item</button>
+        <button onclick="updateItem()" id="updateItem">Update Item</button>
+        <button onclick="deleteItem()" id="deleteItem">Delete Item</button>
+    </div>
+
+    <div id="messageBox"></div>
+</div>
+
+<table>
     <thead>
     <tr>
-        <th> ID</th>
-        <th> Name</th>
-        <th> Price</th>
-        <th> Quantity</th>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Quantity</th>
     </tr>
     </thead>
     <tbody id="tablebody"></tbody>
 </table>
+
 <script src="../accest/js/jquery-3.6.4.min.js"></script>
 <script>
-    function saveItem(){
-        const id = $("#id").val()
-        const name = $("#name").val()
-        const price = $("#price").val()
-        const qty = $("#qty").val()
+    const BASE_URL = "http://localhost:8080/api/v1/item";
 
-        $.ajax({
-            url:'http://localhost:8080/api/v1/item',
-            method: 'POST',
-            contentType:'application/json',
-            data:JSON.stringify({
-                id: id,
-                name: name,
-                price:Number(price),
-                quantity:Number(qty)
-            }),
-            success: function (resp){
-                console.log(resp)
-                getAll()
-            },
-            error: function (resp){
-                console.log(resp)
-            }
-        })
-        alert("Item Saved Successfully")
+    function showMessage(message, type) {
+        $("#messageBox")
+            .removeClass()
+            .addClass(type)
+            .html(message);
     }
-    function updateItem(){
-        const id = $("#id").val()
-        const name = $("#name").val()
-        const price = $("#price").val()
-        const qty = $("#qty").val()
 
-        $.ajax({
-            url:'http://localhost:8080/api/v1/item',
-            method: 'PUT',
-            contentType:'application/json',
-            data:JSON.stringify({
-                id: id,
-                name: name,
-                price:price,
-                quantity:qty
-            }),
-            success: function (resp){
-                console.log(resp)
-                getAll()
-            },
-            error: function (resp){
-                console.log(resp)
-            }
-        })
-        alert("Item Updated Successfully")
-
+    function clearTable() {
+        $("#tablebody").empty();
     }
-    function deleteItem(){
-        const id = $("#id").val()
 
+    function getAll() {
+        clearTable();
         $.ajax({
-            url:'http://localhost:8080/api/v1/item/'+id,
-            method: 'DELETE',
-            success: function (resp){
-                getAll()
-                console.log(resp)
-            },
-            error: function (resp){
-                console.log(resp)
-            }
-        })
-        alert("Item Deleted Successfully")
-    }
-    function getAll(){
-        $.ajax({
-            url:'http://localhost:8080/api/v1/item',
-            method:'GET',
-            success: function (resp){
-                console.log(resp)
-                for(let item of resp){
-                    const tableRow = "<tr>" +
-                        "<td>" + item.id + "</td>" +
-                        "<td>" + item.name + "</td>" +
-                        "<td>" + item.price + "</td>" +
-                        "<td>" + item.quantity + "</td>" +
-                        "</tr>"
-                    $("#tablebody").append(tableRow);
+            url: BASE_URL,
+            method: 'GET',
+            success: function (resp) {
+                for (let item of resp) {
+                    const row = `<tr>
+                                    <td>${item.id}</td>
+                                    <td>${item.name}</td>
+                                    <td>${item.price}</td>
+                                    <td>${item.quantity}</td>
+                                </tr>`;
+                    $("#tablebody").append(row);
                 }
             },
-            error: function (resp){
-                console.log(resp)
+            error: function (resp) {
+                showMessage("Failed to load items", "error");
             }
-        })
-
+        });
     }
-    window.onload(
-        getAll()
-    )
+
+    function saveItem() {
+        const itemData = {
+            id: $("#id").val(),
+            name: $("#name").val(),
+            price: Number($("#price").val()),
+            quantity: Number($("#qty").val())
+        };
+
+        $.ajax({
+            url: BASE_URL,
+            method: 'POST',
+            contentType: "application/json",
+            data: JSON.stringify(itemData),
+            success: function (resp) {
+                showMessage("Item saved successfully", "success");
+                getAll();
+            },
+            error: function (xhr) {
+                handleError(xhr);
+            }
+        });
+    }
+
+    function updateItem() {
+        const itemData = {
+            id: $("#id").val(),
+            name: $("#name").val(),
+            price: Number($("#price").val()),
+            quantity: Number($("#qty").val())
+        };
+
+        $.ajax({
+            url: BASE_URL,
+            method: 'PUT',
+            contentType: "application/json",
+            data: JSON.stringify(itemData),
+            success: function (resp) {
+                showMessage("Item updated successfully", "success");
+                getAll();
+            },
+            error: function (xhr) {
+                handleError(xhr);
+            }
+        });
+    }
+
+    function deleteItem() {
+        const id = $("#id").val();
+        if (!id) {
+            showMessage("Enter item ID to delete", "error");
+            return;
+        }
+
+        $.ajax({
+            url: BASE_URL + "/" + id,
+            method: 'DELETE',
+            success: function (resp) {
+                showMessage("Item deleted successfully", "success");
+                getAll();
+            },
+            error: function (xhr) {
+                handleError(xhr);
+            }
+        });
+    }
+
+    function handleError(xhr) {
+        if (xhr.responseJSON && xhr.responseJSON.data) {
+            let errors = xhr.responseJSON.data;
+            let message = "";
+            for (let key in errors) {
+                message += key + ": " + errors[key] + "<br>";
+            }
+            showMessage(message, "error");
+        } else if (xhr.responseJSON && xhr.responseJSON.message) {
+            showMessage(xhr.responseJSON.message, "error");
+        } else {
+            showMessage("Unexpected error occurred", "error");
+        }
+    }
+
+    $(document).ready(function () {
+        getAll();
+    });
 </script>
 </body>
 </html>

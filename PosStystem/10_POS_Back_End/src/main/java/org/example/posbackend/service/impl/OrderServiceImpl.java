@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class OrderServiceImpl implements OrderService {
@@ -58,5 +60,19 @@ public class OrderServiceImpl implements OrderService {
         }
 
     }
+
+    @Override
+    public List<OrderDto> getOrders() {
+        List<Orders> ordersList =orderRepository.findAll();
+        return ordersList.stream().map(order -> {
+            OrderDto dto = new OrderDto();
+            dto.setOrderID(order.getOrderID());
+            dto.setDate(order.getDate());
+            dto.setCustomerID(order.getCustomerId());
+
+            return dto;
+        }).toList();
+
     }
+}
 

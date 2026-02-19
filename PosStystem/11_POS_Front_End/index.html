@@ -1,12 +1,56 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .nav-container {
+            background: white;
+            padding: 40px 60px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        a {
+            display: block;
+            text-decoration: none;
+            color: white;
+            background-color: #007bff;
+            padding: 15px 25px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-size: 18px;
+            transition: 0.3s;
+        }
+
+        a:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+    </style>
 </head>
 <body>
-<a href="page/customer.html" id="customer">Customer Page</a>
-<a href="page/item.html">Item Pge</a>
-<a href="page/place-order.html">Place Order</a>
+<div class="nav-container">
+    <h1>Dashboard</h1>
+    <a href="page/customer.html" id="customer">Customer Page</a>
+    <a href="page/item.html">Item Page</a>
+    <a href="page/place-order.html">Place Order</a>
+</div>
 </body>
 </html>

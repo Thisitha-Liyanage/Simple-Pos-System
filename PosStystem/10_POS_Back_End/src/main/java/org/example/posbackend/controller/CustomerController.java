@@ -33,7 +33,7 @@ public class CustomerController {
     }
 
     @PutMapping(consumes = "application/json")
-    public  ResponseEntity<ApiResponse<String>> updateCustomer(@RequestBody CustomerDto customerDto) {
+    public  ResponseEntity<ApiResponse<String>> updateCustomer(@RequestBody @Valid CustomerDto customerDto) {
         customerService.updateCustomer(customerDto);
         return new ResponseEntity<>(new ApiResponse<>(
                 201,"Customer Updated" , null)
